@@ -230,7 +230,7 @@ function complete_register()
     h.sleep(3)
     tap(366, 783) -- click continue
     h.sleep(3)
-    inputText("thanhlong99@shopmmo.store") -- input recovery email
+    inputText("thanhlong998@shopmmo.store") -- input recovery email
     h.sleep(3)
     tap(366, 783) -- click continue
     h.sleep(10)

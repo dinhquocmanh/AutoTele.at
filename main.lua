@@ -9,6 +9,8 @@ local host_address = "http://192.168.1.70:5003"
 local package_shadow = "com.liguangming.Shadowrocket"
 local vpn_command = "activator send switch-off.com.a3tweaks.switch.vpn"
 local SCAN_MODE = false
+local LOOP_COUNT = 50
+
 -- define the task which is running
 TASK = nil 
 public_ip = {}
@@ -158,6 +160,7 @@ function enter_phone()
         TASK['status_sms'] = 'case 1. sms send to phone'
         return true;
     end 
+    
     -- case send sms need click
     x,y = h.search_image('Screenshots/getcode-sms.PNG')
     if x then 
@@ -172,6 +175,16 @@ function enter_phone()
     if x then 
         h.notif("case 3. enter your email")
         TASK['status_sms'] = 'case 3. enter your email'
+        return true;
+    end
+
+    -- case 0. allow contact
+    x,y = h.search_image('Screenshots/dont-allow.PNG')
+    if x then 
+        h.notif("case 0. allow contact")
+        TASK['status_sms'] = 'case 0. register success'
+        tap(x,y)
+        h.sleep(3)
         return true;
     end
 
@@ -203,16 +216,6 @@ function enter_phone()
         h.notif("case 6. no internet")
         TASK['status_sms'] = 'case 6. no internet'
         return false;
-    end
-
-    -- case 0. allow contact
-    x,y = h.search_image('Screenshots/dont-allow.PNG')
-    if x then 
-        h.notif("case 0. allow contact")
-        TASK['status_sms'] = 'case 0. register success'
-        tap(x,y)
-        h.sleep(3)
-        return true;
     end
 
     -- case 7. unknown
@@ -272,11 +275,11 @@ function complete_register()
     h.sleep(1)
     inputText(TASK.user.last_name)
     tap(379,723)
-    h.sleep(5)
+    h.sleep(10)
     appKill("ph.telegra.Telegraph")
-    h.sleep(5)
+    h.sleep(10)
     appRun("ph.telegra.Telegraph")
-    h.sleep(5)
+    h.sleep(10)
     -- we enter phone again an check
     enter_phone()
 
@@ -403,6 +406,7 @@ function main()
 
     -- we continue or not
     if not has_sms then
+        post_task()
         return 
     end 
     
@@ -424,7 +428,12 @@ function main()
 end
 
 -- Main Loop
-while true do
-    main()
-    --stop(); -- run auto only 1 time
-end
+if LOOP_COUNT == -1 then 
+    while true do
+        main()
+    end
+else
+    for i=1, LOOP_COUNT, 1 do 
+        main()
+    end 
+end 
